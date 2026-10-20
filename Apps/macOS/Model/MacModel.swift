@@ -263,10 +263,3 @@ final class MacModel {
 
     func dismissError() { lastError = nil }
 }
-
-extension Link {
-    /// Closes from the main actor without waiting.
-    nonisolated func closeSoon() {
-        Task { await close() }
-    }
-}

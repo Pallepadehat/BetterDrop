@@ -85,6 +85,11 @@ public actor Link {
         shutDown()
     }
 
+    /// Closes without waiting, from anywhere.
+    public nonisolated func closeSoon() {
+        Task { await close() }
+    }
+
     // MARK: - Sending
 
     /// Sends a file and returns once the other side has it, checked and saved.

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02BD4E312239E0684CBCA79B /* ConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64DDDD591F156BB8158FEEC0 /* ConnectView.swift */; };
 		05776FB5D58B10244DB82BE5 /* BetterDropCore in Frameworks */ = {isa = PBXBuildFile; productRef = 0B7B9669D62FFB2DC11AE7A2 /* BetterDropCore */; };
 		2416B7314B4EFF46983A272F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EBFEF2E3F3453CD037BD4B99 /* Assets.xcassets */; };
 		29F9C776A30780E8CE721E1F /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 2BF3A707BC3340F4BE141ECA /* Sparkle */; };
@@ -16,26 +17,43 @@
 		3FE2E2BB3F79E7650B2B297E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4F05223758A67EB1E01882 /* SettingsView.swift */; };
 		41818F9033FBC3114F406F9C /* EdgeOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A07E373727DD13718CBA3E /* EdgeOverlayView.swift */; };
 		45128F59E3C583A5DDA5D520 /* BetterDropUI in Frameworks */ = {isa = PBXBuildFile; productRef = 978F81B1AE9105FDCA74250D /* BetterDropUI */; };
+		45D02DE465256D1C9F32B9A2 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7756AEEBE0A78B6B52E57C9 /* RootView.swift */; };
+		474F5C1127510AF74EE4140C /* PickedFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A40822162E33267511378B /* PickedFile.swift */; };
+		5AB793552FACDF8252607A80 /* BetterDropApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CC7E4228C50C9F4AE5F07D2 /* BetterDropApp.swift */; };
+		5C5359F664BCDFDA207B5D1A /* FlingableCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE08D4724BD392D65C6A28B /* FlingableCard.swift */; };
 		62690CDB88B79150266169C5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EBFEF2E3F3453CD037BD4B99 /* Assets.xcassets */; };
+		65E55FDBBEE0C864EACBF8AC /* BottomBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33522111BFADFD7C12C3E6CC /* BottomBar.swift */; };
 		739F9949B6D85D683E760BD0 /* MacModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06690DEF6384E65D3AE28054 /* MacModel.swift */; };
 		8D94ABD4829D23A29C8CABD0 /* BetterDropTransport in Frameworks */ = {isa = PBXBuildFile; productRef = E12EFA7CC924770D62CA89F8 /* BetterDropTransport */; };
+		8F1F4C1ACEFE4CD2236612DD /* SettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59CD8247C5094E680A7B4ECB /* SettingsSheet.swift */; };
+		8F26A588AA3C98CCD0561B14 /* LibraryScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A48D52A6927E62013BE290 /* LibraryScreen.swift */; };
 		954B16C7453D5283DC568204 /* BetterDropTransport in Frameworks */ = {isa = PBXBuildFile; productRef = F6AB1BB4824391F5A5D7C7A7 /* BetterDropTransport */; };
 		A1C37DC11113D6BA42786786 /* BetterDropUI in Frameworks */ = {isa = PBXBuildFile; productRef = 87132DA4B032492C45DD2577 /* BetterDropUI */; };
 		BAAA32B5D9A22F2DF5DDD981 /* LibraryPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D66159E7CD751A0990AAB58 /* LibraryPanel.swift */; };
 		BE9917E757A82172AA82EADF /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3AE83EB3A44E55AC72C7D2 /* Preferences.swift */; };
 		ED34C6FC9C3DEABBB890B26E /* EdgeOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B67A134276690363AEFE3B8 /* EdgeOverlay.swift */; };
+		EDD6CB648A5D6F12501C1416 /* PhoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E62B72F5BF1F11E8E27F2D3 /* PhoneModel.swift */; };
 		F2508D82101A7B5CECBB80EE /* BetterDropCore in Frameworks */ = {isa = PBXBuildFile; productRef = B77C670491EDDB6F1854E1FD /* BetterDropCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		06690DEF6384E65D3AE28054 /* MacModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacModel.swift; sourceTree = "<group>"; };
 		0D66159E7CD751A0990AAB58 /* LibraryPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPanel.swift; sourceTree = "<group>"; };
+		1AE08D4724BD392D65C6A28B /* FlingableCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlingableCard.swift; sourceTree = "<group>"; };
 		1B67A134276690363AEFE3B8 /* EdgeOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeOverlay.swift; sourceTree = "<group>"; };
 		1FB20C19067AF30DC6BB6EB7 /* PairingPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingPromptView.swift; sourceTree = "<group>"; };
 		276AAE70E5CE1DC15F597711 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		33522111BFADFD7C12C3E6CC /* BottomBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomBar.swift; sourceTree = "<group>"; };
 		38755739C626452A3C0246F1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		39A40822162E33267511378B /* PickedFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickedFile.swift; sourceTree = "<group>"; };
 		42018D9BD02311E07358B420 /* BetterDrop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BetterDrop.entitlements; sourceTree = "<group>"; };
+		59CD8247C5094E680A7B4ECB /* SettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSheet.swift; sourceTree = "<group>"; };
 		5D4F05223758A67EB1E01882 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		64DDDD591F156BB8158FEEC0 /* ConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectView.swift; sourceTree = "<group>"; };
+		7CC7E4228C50C9F4AE5F07D2 /* BetterDropApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetterDropApp.swift; sourceTree = "<group>"; };
+		8E62B72F5BF1F11E8E27F2D3 /* PhoneModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneModel.swift; sourceTree = "<group>"; };
+		A4A48D52A6927E62013BE290 /* LibraryScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryScreen.swift; sourceTree = "<group>"; };
+		A7756AEEBE0A78B6B52E57C9 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		AD736D7B4D358155AD0197FC /* BetterDropMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BetterDropMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE3AE83EB3A44E55AC72C7D2 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		BDB5B6073DBD06294B45DAA7 /* BetterDropiOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BetterDropiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,6 +89,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		077353C5D77B40F91D40B352 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				33522111BFADFD7C12C3E6CC /* BottomBar.swift */,
+				64DDDD591F156BB8158FEEC0 /* ConnectView.swift */,
+				1AE08D4724BD392D65C6A28B /* FlingableCard.swift */,
+				A4A48D52A6927E62013BE290 /* LibraryScreen.swift */,
+				A7756AEEBE0A78B6B52E57C9 /* RootView.swift */,
+				59CD8247C5094E680A7B4ECB /* SettingsSheet.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		088C2F4DEAFC3B7D5A858C5C /* App */ = {
+			isa = PBXGroup;
+			children = (
+				7CC7E4228C50C9F4AE5F07D2 /* BetterDropApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
 		1A520E3AC33F9D5B905763C1 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -82,6 +121,9 @@
 		21F18B7B297A426931438B56 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				088C2F4DEAFC3B7D5A858C5C /* App */,
+				AF2BB7BC41A42EBFBFB32CCB /* Model */,
+				077353C5D77B40F91D40B352 /* Views */,
 				38755739C626452A3C0246F1 /* Info.plist */,
 			);
 			name = iOS;
@@ -138,6 +180,15 @@
 				ECE906F195C9CD8AA17B1437 /* BetterDropKit */,
 			);
 			path = Packages;
+			sourceTree = "<group>";
+		};
+		AF2BB7BC41A42EBFBFB32CCB /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8E62B72F5BF1F11E8E27F2D3 /* PhoneModel.swift */,
+				39A40822162E33267511378B /* PickedFile.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		D0A934661CC8E3E2D6E8E71E /* Model */ = {
@@ -307,6 +358,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AB793552FACDF8252607A80 /* BetterDropApp.swift in Sources */,
+				65E55FDBBEE0C864EACBF8AC /* BottomBar.swift in Sources */,
+				02BD4E312239E0684CBCA79B /* ConnectView.swift in Sources */,
+				5C5359F664BCDFDA207B5D1A /* FlingableCard.swift in Sources */,
+				8F26A588AA3C98CCD0561B14 /* LibraryScreen.swift in Sources */,
+				EDD6CB648A5D6F12501C1416 /* PhoneModel.swift in Sources */,
+				474F5C1127510AF74EE4140C /* PickedFile.swift in Sources */,
+				45D02DE465256D1C9F32B9A2 /* RootView.swift in Sources */,
+				8F1F4C1ACEFE4CD2236612DD /* SettingsSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
