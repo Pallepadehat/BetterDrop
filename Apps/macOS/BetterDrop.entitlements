@@ -5,5 +5,10 @@
 	<!-- The proximity beacon. Only enforced inside the App Sandbox, but it says what the app uses. -->
 	<key>com.apple.security.device.bluetooth</key>
 	<true/>
+	<!-- Releases are signed ad hoc (there's no Developer ID yet), and the hardened runtime won't load an ad hoc
+	     signed framework (Sparkle) into an ad hoc signed app without this. Remove it once releases are signed
+	     with a Developer ID. -->
+	<key>com.apple.security.cs.disable-library-validation</key>
+	<true/>
 </dict>
 </plist>
