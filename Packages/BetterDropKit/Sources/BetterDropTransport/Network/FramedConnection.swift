@@ -73,8 +73,7 @@ public final class FramedConnection: Sendable {
     /// Reads the next record. Only one reader at a time.
     public func receive() async throws -> Data {
         let header = try await receive(exactly: 4)
-        let length = Int(UInt32(header[header.startIndex]) << 24 | UInt32(header[header.startIndex + 1]) << 16
-            | UInt32(header[header.startIndex + 2]) << 8 | UInt32(header[header.startIndex + 3]))
+        let length = header.reduce(0) { ($0 << 8) | Int($1) }
         guard length <= Self.maximumRecordLength else {
             cancel()
             throw Failure.recordTooLarge(length)

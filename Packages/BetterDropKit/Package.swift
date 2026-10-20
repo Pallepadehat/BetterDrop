@@ -18,7 +18,8 @@ let package = Package(
     targets: [
         .target(name: "BetterDropCore"),
         .target(name: "BetterDropTransport", dependencies: ["BetterDropCore"]),
-        .target(name: "BetterDropUI", dependencies: ["BetterDropCore"]),
+        // The shaders: Xcode compiles them into the bundle's default.metallib.
+        .target(name: "BetterDropUI", dependencies: ["BetterDropCore"], resources: [.process("Shaders")]),
         .testTarget(name: "BetterDropCoreTests", dependencies: ["BetterDropCore"]),
         .testTarget(name: "BetterDropTransportTests", dependencies: ["BetterDropTransport"]),
     ]
