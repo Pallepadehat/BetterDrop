@@ -12,6 +12,11 @@ public enum Proximity: Int, Codable, Sendable, Comparable, CaseIterable {
     public static func < (lhs: Proximity, rhs: Proximity) -> Bool { lhs.rawValue < rhs.rawValue }
 }
 
+/// Which side of the Mac the phone is held on, so the phone knows where its light and ripples come from.
+public enum Side: String, Codable, Sendable, CaseIterable {
+    case left, right
+}
+
 /// A file one side would like to send.
 public struct FileOffer: Codable, Sendable, Hashable, Identifiable {
     public var id: UUID
@@ -50,6 +55,11 @@ public enum Message: Sendable, Equatable {
     case cancel(UUID)
     /// The phone telling the Mac how close it is, so the Mac's edge can glow.
     case proximity(Proximity)
+    /// How close the phone is, from 0 (far) to 1 (touching), sent many times a second so the Mac's light can follow
+    /// the phone smoothly.
+    case closeness(Double)
+    /// The Mac telling the phone which side of it the phone sits.
+    case side(Side)
     /// A device renamed itself.
     case rename(String)
     case ping

@@ -10,15 +10,33 @@ public struct EdgeBloom: View {
     /// 0 is off, about 0.35 is "the phone is here", 1 is a file passing through.
     public var intensity: Double
     public var edge: Edge
+    /// Sonar rings rolling out of the edge, 0 to 1: how close the phone is.
+    public var waves: Double
+    /// Changes each time something arrives or leaves, sending a shockwave across the screen.
+    public var burst: Int
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    public init(intensity: Double, edge: Edge) {
+    public init(intensity: Double, edge: Edge, waves: Double = 0, burst: Int = 0) {
         self.intensity = intensity
         self.edge = edge
+        self.waves = waves
+        self.burst = burst
     }
 
+    private var edgePoint: UnitPoint { UnitPoint(x: edge == .trailing ? 1 : 0, y: 0.5) }
+
     public var body: some View {
+        ZStack {
+            SonarRings(intensity: waves, center: edgePoint, reach: 1.1, lineWidth: 3)
+            bloom
+            Shockwave(trigger: burst, center: edgePoint)
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    private var bloom: some View {
         GeometryReader { proxy in
             let height = proxy.size.height
             let diameter = height * (0.55 + 0.5 * intensity)
@@ -53,13 +71,11 @@ public struct EdgeBloom: View {
         }
         .opacity(min(1, intensity * 1.6))
         .animation(.spring(duration: 0.8, bounce: 0.15), value: intensity)
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
     }
 }
 
 #Preview {
-    EdgeBloom(intensity: 1, edge: .trailing)
+    EdgeBloom(intensity: 0.6, edge: .trailing, waves: 0.8)
         .frame(width: 900, height: 560)
         .background(LinearGradient(colors: [.teal, .indigo], startPoint: .top, endPoint: .bottom))
 }

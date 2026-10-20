@@ -21,6 +21,8 @@ public final class ProximityScanner: NSObject {
     public private(set) var availability: Availability = .unknown
     /// By short device ID.
     public private(set) var proximities: [String: Proximity] = [:]
+    /// How close each Mac is, from 0 (out of range) to 1 (touching), smoothly, by short device ID.
+    public private(set) var closenesses: [String: Double] = [:]
 
     @ObservationIgnored private var manager: CBCentralManager?
     @ObservationIgnored private var readings: [String: Reading] = [:]
@@ -40,6 +42,16 @@ public final class ProximityScanner: NSObject {
 
     public func proximity(of id: DeviceID) -> Proximity {
         proximities[id.short] ?? .away
+    }
+
+    public func closeness(of id: DeviceID) -> Double {
+        closenesses[id.short] ?? 0
+    }
+
+    /// Signal strengths mapped onto closeness: -85 dBm and weaker is 0, -38 dBm and stronger is 1.
+    static func closeness(for rssi: Double) -> Double {
+        let value = (rssi + 85) / 47
+        return min(1, max(0, value))
     }
 
     public func start() {
@@ -62,6 +74,7 @@ public final class ProximityScanner: NSObject {
         decay = nil
         readings.removeAll()
         proximities.removeAll()
+        closenesses.removeAll()
     }
 
     private func scan(_ manager: CBCentralManager) {
@@ -79,6 +92,9 @@ public final class ProximityScanner: NSObject {
         reading.level = Self.level(for: reading.smoothed, from: reading.level)
         readings[shortID] = reading
         if proximities[shortID] != reading.level { proximities[shortID] = reading.level }
+        let closeness = Self.closeness(for: reading.smoothed)
+        // Small wobbles aren't worth redrawing for.
+        if abs((closenesses[shortID] ?? -1) - closeness) > 0.015 { closenesses[shortID] = closeness }
     }
 
     static func level(for rssi: Double, from current: Proximity) -> Proximity {
@@ -94,6 +110,7 @@ public final class ProximityScanner: NSObject {
         for (id, reading) in readings where reading.lastSeen < cutoff {
             readings[id] = nil
             proximities[id] = nil
+            closenesses[id] = nil
         }
     }
 }
@@ -110,6 +127,7 @@ extension ProximityScanner: CBCentralManagerDelegate {
             default:
                 availability = .unavailable
                 proximities.removeAll()
+                closenesses.removeAll()
             }
         }
     }

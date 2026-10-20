@@ -14,6 +14,8 @@ public enum LinkEvent: Sendable {
     case outgoingFinished(UUID)
     case failed(UUID, reason: String)
     case proximity(Proximity)
+    case closeness(Double)
+    case side(Side)
     case renamed(String)
     /// The connection is gone. Every transfer still going has been reported as failed.
     case closed
@@ -197,6 +199,10 @@ public actor Link {
             }
         case let .proximity(proximity):
             continuation.yield(.proximity(proximity))
+        case let .closeness(value):
+            continuation.yield(.closeness(value))
+        case let .side(side):
+            continuation.yield(.side(side))
         case let .rename(name):
             continuation.yield(.renamed(name))
         case .ping:

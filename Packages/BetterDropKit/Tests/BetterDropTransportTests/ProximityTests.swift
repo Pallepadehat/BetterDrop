@@ -17,6 +17,12 @@ struct ProximityTests {
         #expect(ProximityScanner.level(for: -85, from: .nearby) == .away)
     }
 
+    @Test func closenessIsSmoothAndClamped() {
+        #expect(ProximityScanner.closeness(for: -100) == 0)
+        #expect(ProximityScanner.closeness(for: -30) == 1)
+        #expect(ProximityScanner.closeness(for: -60) > ProximityScanner.closeness(for: -70))
+    }
+
     @Test func beaconNamesCarryTheShortID() {
         let id = DeviceID.random()
         let name = ProximityConfiguration.localName(for: id)

@@ -15,6 +15,8 @@ struct MessageCodecTests {
         .received(id),
         .cancel(id),
         .proximity(.touching),
+        .closeness(0.75),
+        .side(.left),
         .rename("Patrick's MacBook Pro"),
         .ping,
         .pong,
