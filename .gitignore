@@ -1,0 +1,22 @@
+# Xcode
+build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# The Xcode project is generated from project.yml by XcodeGen.
+BetterDrop.xcodeproj/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/*/Package.resolved
+
+# macOS
+.DS_Store
+
+# Secrets
+*.env
+.env*
+sparkle-key*.txt
