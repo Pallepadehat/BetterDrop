@@ -29,6 +29,7 @@ private struct GeneralSettings: View {
                 Text("Left of the screen").tag(EdgeBloom.Edge.leading)
                 Text("Right of the screen").tag(EdgeBloom.Edge.trailing)
             }
+            .onChange(of: preferences.edge) { model.edgeChanged() }
             Toggle("Show files in Finder when they arrive", isOn: $preferences.revealReceivedFiles)
             Toggle("Play sounds", isOn: $preferences.playsSounds)
             Toggle("Open BetterDrop when you log in", isOn: $launchesAtLogin)

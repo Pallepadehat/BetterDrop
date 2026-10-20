@@ -8,12 +8,19 @@ struct EdgeOverlayView: View {
 
     var body: some View {
         ZStack {
-            EdgeBloom(intensity: model.bloomIntensity, edge: model.preferences.edge)
+            EdgeBloom(intensity: model.bloomIntensity, edge: model.preferences.edge, waves: model.waveIntensity, burst: model.bursts)
+                .animation(.smooth(duration: 0.35), value: model.closeness)
             ForEach(model.arrivals) { item in
                 ArrivalCard(item: item, url: model.library.url(for: item), edge: model.preferences.edge) {
                     model.arrivals.removeAll { $0.id == item.id }
                 }
             }
+        }
+        .mask {
+            // Fade out towards the middle of the screen, so rings and light never stop at a hard line.
+            LinearGradient(stops: [.init(color: .white, location: 0), .init(color: .white, location: 0.55), .init(color: .clear, location: 1)],
+                           startPoint: model.preferences.edge == .trailing ? .trailing : .leading,
+                           endPoint: model.preferences.edge == .trailing ? .leading : .trailing)
         }
         .ignoresSafeArea()
     }

@@ -12,7 +12,7 @@ extension View {
     }
 }
 
-enum EdgeSide: Equatable {
+nonisolated enum EdgeSide: Equatable, Sendable {
     case left, right
 
     func origin(in size: CGSize) -> CGPoint {

@@ -1,6 +1,7 @@
 import AppKit
 import BetterDropCore
 import BetterDropTransport
+import BetterDropUI
 import Observation
 import os
 
@@ -17,6 +18,10 @@ final class MacModel {
     private(set) var connected: [DeviceInfo] = []
     private(set) var transfers: [UUID: Transfer] = [:]
     private(set) var proximities: [DeviceID: Proximity] = [:]
+    /// How close each phone is, 0 to 1, as it streams it.
+    private(set) var closenesses: [DeviceID: Double] = [:]
+    /// Bumped for every shockwave: a phone connected, or a file arrived or left.
+    private(set) var bursts = 0
     /// A phone asking to pair, waiting for you.
     private(set) var pendingApproval: PairingApproval?
     /// Files that just arrived, for the overlay to fly in. Removed by the overlay once they've landed.
@@ -77,9 +82,22 @@ final class MacModel {
         if flash || isDropTargeted || transfers.values.contains(where: { $0.direction == .incoming }) { return 1 }
         if pendingApproval != nil { return 0.75 }
         if !transfers.isEmpty { return 0.7 }
-        return switch proximities.values.max() ?? .away {
-        case .touching: 0.4
-        case .nearby, .away: 0
+        // Grows smoothly as the phone comes closer, from nothing at arm's length to a steady glow touching.
+        return max(0, (closeness - 0.35) / 0.65) * 0.5
+    }
+
+    /// The nearest phone's closeness, 0 to 1.
+    var closeness: Double { closenesses.values.max() ?? 0 }
+
+    /// Sonar rolling out of the edge while a phone is close.
+    var waveIntensity: Double { max(0, (closeness - 0.3) / 0.7) }
+
+    /// Which side of the Mac the phone sits on, as the phone sees it.
+    var phoneSide: Side { preferences.edge == .trailing ? .right : .left }
+
+    func edgeChanged() {
+        for link in links.values {
+            Task { try? await link.send(.side(phoneSide)) }
         }
     }
 
@@ -162,8 +180,11 @@ final class MacModel {
         runDemoOnConnect()
         #endif
 
+        bursts += 1
+        let side = phoneSide
         Task {
             await link.start()
+            try? await link.send(.side(side))
             for await event in link.events {
                 handle(event, from: link)
             }
@@ -172,6 +193,7 @@ final class MacModel {
                 links[peer.id] = nil
                 connected.removeAll { $0.id == peer.id }
                 proximities[peer.id] = nil
+                closenesses[peer.id] = nil
             }
         }
     }
@@ -180,6 +202,7 @@ final class MacModel {
         switch event {
         case let .incomingStarted(offer):
             transfers[offer.id] = Transfer(offer: offer, direction: .incoming, peerName: link.peer.name)
+            bursts += 1
         case let .progress(id, completed):
             transfers[id]?.completed = completed
         case let .incomingFinished(offer, url):
@@ -192,6 +215,10 @@ final class MacModel {
             }
         case let .proximity(proximity):
             proximities[link.peer.id] = proximity
+        case let .closeness(value):
+            closenesses[link.peer.id] = value
+        case .side:
+            break
         case let .renamed(name):
             if let index = connected.firstIndex(where: { $0.id == link.peer.id }) { connected[index].name = name }
         case .closed:
@@ -244,6 +271,7 @@ final class MacModel {
     private func send(_ item: DropItem, over link: Link) {
         let offer = FileOffer(item)
         transfers[offer.id] = Transfer(offer: offer, direction: .outgoing, peerName: link.peer.name, itemID: item.id)
+        bursts += 1
         flashOnce()
         let url = library.url(for: item)
         Task {

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		02BD4E312239E0684CBCA79B /* ConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64DDDD591F156BB8158FEEC0 /* ConnectView.swift */; };
 		05776FB5D58B10244DB82BE5 /* BetterDropCore in Frameworks */ = {isa = PBXBuildFile; productRef = 0B7B9669D62FFB2DC11AE7A2 /* BetterDropCore */; };
+		0735A63D65EB453111B837E8 /* Ripple.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2FA51D50C12DE40DB7F6C95E /* Ripple.metal */; };
 		2416B7314B4EFF46983A272F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EBFEF2E3F3453CD037BD4B99 /* Assets.xcassets */; };
 		29F9C776A30780E8CE721E1F /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 2BF3A707BC3340F4BE141ECA /* Sparkle */; };
 		2E4E2E5688271AC0F816CD60 /* Updates.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69B5CDBF21CB61660A4123D /* Updates.swift */; };
@@ -33,9 +34,12 @@
 		B825637D8351BAB3572CBD91 /* Demo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D55CC7DE97097AC002E1F8A /* Demo.swift */; };
 		BAAA32B5D9A22F2DF5DDD981 /* LibraryPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D66159E7CD751A0990AAB58 /* LibraryPanel.swift */; };
 		BE9917E757A82172AA82EADF /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3AE83EB3A44E55AC72C7D2 /* Preferences.swift */; };
+		DBC2174E45DF36F139D620F9 /* Ripple.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2FA51D50C12DE40DB7F6C95E /* Ripple.metal */; };
+		E09513D7DD4A16DAA202A89C /* RippleEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 899622673E9557071A492ADA /* RippleEffects.swift */; };
 		ED34C6FC9C3DEABBB890B26E /* EdgeOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B67A134276690363AEFE3B8 /* EdgeOverlay.swift */; };
 		EDD6CB648A5D6F12501C1416 /* PhoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E62B72F5BF1F11E8E27F2D3 /* PhoneModel.swift */; };
 		F2508D82101A7B5CECBB80EE /* BetterDropCore in Frameworks */ = {isa = PBXBuildFile; productRef = B77C670491EDDB6F1854E1FD /* BetterDropCore */; };
+		FD7B817C731D288B875B77AA /* RippleEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 899622673E9557071A492ADA /* RippleEffects.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +49,7 @@
 		1B67A134276690363AEFE3B8 /* EdgeOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EdgeOverlay.swift; sourceTree = "<group>"; };
 		1FB20C19067AF30DC6BB6EB7 /* PairingPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingPromptView.swift; sourceTree = "<group>"; };
 		276AAE70E5CE1DC15F597711 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2FA51D50C12DE40DB7F6C95E /* Ripple.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Ripple.metal; sourceTree = "<group>"; };
 		33522111BFADFD7C12C3E6CC /* BottomBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomBar.swift; sourceTree = "<group>"; };
 		38755739C626452A3C0246F1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		39A40822162E33267511378B /* PickedFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickedFile.swift; sourceTree = "<group>"; };
@@ -55,6 +60,7 @@
 		5D55CC7DE97097AC002E1F8A /* Demo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Demo.swift; sourceTree = "<group>"; };
 		64DDDD591F156BB8158FEEC0 /* ConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectView.swift; sourceTree = "<group>"; };
 		7CC7E4228C50C9F4AE5F07D2 /* BetterDropApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetterDropApp.swift; sourceTree = "<group>"; };
+		899622673E9557071A492ADA /* RippleEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RippleEffects.swift; sourceTree = "<group>"; };
 		8E62B72F5BF1F11E8E27F2D3 /* PhoneModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneModel.swift; sourceTree = "<group>"; };
 		A4A48D52A6927E62013BE290 /* LibraryScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryScreen.swift; sourceTree = "<group>"; };
 		A7756AEEBE0A78B6B52E57C9 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -134,6 +140,15 @@
 			path = Apps/iOS;
 			sourceTree = "<group>";
 		};
+		2EED1E0B7B8F0EEC558D56D7 /* Effects */ = {
+			isa = PBXGroup;
+			children = (
+				2FA51D50C12DE40DB7F6C95E /* Ripple.metal */,
+				899622673E9557071A492ADA /* RippleEffects.swift */,
+			);
+			path = Effects;
+			sourceTree = "<group>";
+		};
 		4830CECBCDED78F891093C6F /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -209,6 +224,7 @@
 		D6A63DB9D7A0531A3E89AE6C /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				2EED1E0B7B8F0EEC558D56D7 /* Effects */,
 				EBFEF2E3F3453CD037BD4B99 /* Assets.xcassets */,
 			);
 			name = Shared;
@@ -356,6 +372,8 @@
 				739F9949B6D85D683E760BD0 /* MacModel.swift in Sources */,
 				33F55C99A00B4B46F566476B /* PairingPromptView.swift in Sources */,
 				BE9917E757A82172AA82EADF /* Preferences.swift in Sources */,
+				DBC2174E45DF36F139D620F9 /* Ripple.metal in Sources */,
+				FD7B817C731D288B875B77AA /* RippleEffects.swift in Sources */,
 				3FE2E2BB3F79E7650B2B297E /* SettingsView.swift in Sources */,
 				2E4E2E5688271AC0F816CD60 /* Updates.swift in Sources */,
 			);
@@ -373,6 +391,8 @@
 				8F26A588AA3C98CCD0561B14 /* LibraryScreen.swift in Sources */,
 				EDD6CB648A5D6F12501C1416 /* PhoneModel.swift in Sources */,
 				474F5C1127510AF74EE4140C /* PickedFile.swift in Sources */,
+				0735A63D65EB453111B837E8 /* Ripple.metal in Sources */,
+				E09513D7DD4A16DAA202A89C /* RippleEffects.swift in Sources */,
 				45D02DE465256D1C9F32B9A2 /* RootView.swift in Sources */,
 				8F1F4C1ACEFE4CD2236612DD /* SettingsSheet.swift in Sources */,
 			);

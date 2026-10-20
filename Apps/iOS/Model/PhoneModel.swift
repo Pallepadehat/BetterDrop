@@ -36,12 +36,18 @@ final class PhoneModel {
     private(set) var arrivals = 0
     private(set) var departures = 0
     private(set) var flash = false
+    /// Bumped for every burst of light: something arrived, left, or we just connected.
+    private(set) var bursts = 0
+    /// Which edge of this screen faces the Mac. The Mac says which side of it we're on; until then, the left, as
+    /// most people hold the phone to the right of the laptop.
+    private(set) var macSide = EdgeSide.left
     var lastError: String?
 
     @ObservationIgnored private let store: any PairingStore = KeychainPairingStore()
     @ObservationIgnored private var link: Link?
     @ObservationIgnored private var maintaining: Task<Void, Never>?
     @ObservationIgnored private var reportingProximity: Task<Void, Never>?
+    @ObservationIgnored private var reportingCloseness: Task<Void, Never>?
     @ObservationIgnored private var flashTask: Task<Void, Never>?
     @ObservationIgnored private let log = Logger(subsystem: "BetterDrop", category: "phone")
     @ObservationIgnored private static let nameKey = "deviceName"
@@ -65,6 +71,7 @@ final class PhoneModel {
         guard maintaining == nil else { return }
         maintaining = Task { await maintainConnection() }
         reportingProximity = Task { await reportProximity() }
+        reportingCloseness = Task { await reportCloseness() }
         #if DEBUG
         runDemo()
         #endif
@@ -76,6 +83,8 @@ final class PhoneModel {
         maintaining = nil
         reportingProximity?.cancel()
         reportingProximity = nil
+        reportingCloseness?.cancel()
+        reportingCloseness = nil
     }
 
     /// Keeps a connection to the paired Mac whenever it can be seen on the network.
@@ -99,6 +108,26 @@ final class PhoneModel {
             try? await link.send(.proximity(proximity))
         }
     }
+
+    /// The smooth version, at most fifteen times a second, for the Mac's light to follow.
+    private func reportCloseness() async {
+        let changes = Observations { [weak self] in
+            self.map { model in model.pairedMac.map { model.scanner.closeness(of: $0.id) } ?? 0 }
+        }
+        var lastSent = ContinuousClock.now - .seconds(1)
+        for await closeness in changes {
+            guard let closeness, let link, ContinuousClock.now - lastSent > .milliseconds(66) else { continue }
+            lastSent = .now
+            try? await link.send(.closeness(closeness))
+        }
+    }
+
+    /// How close the paired Mac is, 0 to 1.
+    var closeness: Double {
+        pairedMac.map { scanner.closeness(of: $0.id) } ?? 0
+    }
+
+    func closeness(of mac: DiscoveredDevice) -> Double { scanner.closeness(of: mac.id) }
 
     // MARK: - Pairing
 
@@ -177,6 +206,7 @@ final class PhoneModel {
         self.link?.closeSoon()
         self.link = link
         connection = .connected
+        bursts += 1
         if let pairedMac, pairedMac.device.name != link.peer.name {
             var updated = pairedMac
             updated.device = link.peer
@@ -200,6 +230,7 @@ final class PhoneModel {
         switch event {
         case let .incomingStarted(offer):
             transfers[offer.id] = Transfer(offer: offer, direction: .incoming, peerName: link.peer.name)
+            bursts += 1
         case let .progress(id, completed):
             transfers[id]?.completed = completed
         case let .incomingFinished(offer, url):
@@ -225,7 +256,9 @@ final class PhoneModel {
                 try? store.save(paired)
                 pairedMac = paired
             }
-        case .proximity:
+        case let .side(side):
+            macSide = side == .right ? .left : .right
+        case .proximity, .closeness:
             break
         case .closed:
             for (id, transfer) in transfers where transfer.peerName == link.peer.name { transfers[id] = nil }
@@ -238,8 +271,9 @@ final class PhoneModel {
         if flash { return 1 }
         if transfers.values.contains(where: { $0.direction == .incoming }) { return 0.9 }
         if !transfers.isEmpty { return 0.6 }
-        guard let pairedMac, connection == .connected else { return 0 }
-        return scanner.proximity(of: pairedMac.id) == .touching ? 0.35 : 0
+        guard pairedMac != nil, connection == .connected else { return 0 }
+        // Wakes up as the phone nears the Mac, and is plainly there once they touch.
+        return max(0, (closeness - 0.45) / 0.55) * 0.55
     }
 
     private func flashOnce() {
@@ -264,6 +298,7 @@ final class PhoneModel {
         let offer = FileOffer(item)
         transfers[offer.id] = Transfer(offer: offer, direction: .outgoing, peerName: link.peer.name, itemID: item.id)
         departures += 1
+        bursts += 1
         flashOnce()
         let url = library.url(for: item)
         Task {

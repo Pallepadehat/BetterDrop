@@ -14,7 +14,11 @@ struct RootView: View {
                 LibraryScreen()
                     .transition(.opacity)
             }
-            GlowBorder(intensity: model.pairedMac == nil ? 0 : model.glowIntensity)
+            if model.pairedMac != nil {
+                GlowBorder(intensity: model.glowIntensity, emphasis: model.macSide == .left ? .leading : .trailing)
+                Shockwave(trigger: model.bursts, center: UnitPoint(x: model.macSide == .left ? 0 : 1, y: 0.45))
+                    .ignoresSafeArea()
+            }
         }
         .animation(.smooth(duration: 0.5), value: model.pairedMac == nil)
         .sensoryFeedback(.success, trigger: model.arrivals)
