@@ -33,8 +33,8 @@ private struct MenuBarIcon: View {
     }
 
     private var symbol: String {
-        if !model.transfers.isEmpty { return "iphone.radiowaves.left.and.right" }
-        return model.isConnected ? "wave.3.right.circle.fill" : "wave.3.right.circle"
+        if !model.transfers.isEmpty { return "drop.halffull" }
+        return model.isConnected ? "drop.fill" : "drop"
     }
 }
 

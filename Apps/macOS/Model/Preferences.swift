@@ -1,4 +1,4 @@
-import BetterDropUI
+import BetterDropCore
 import Foundation
 import Observation
 
@@ -12,9 +12,9 @@ final class Preferences {
         didSet { defaults.set(deviceName, forKey: Keys.deviceName) }
     }
 
-    /// Which side of the screen the phone sits on: the light comes out of that edge.
-    var edge: EdgeBloom.Edge {
-        didSet { defaults.set(edge.rawValue, forKey: Keys.edge) }
+    /// Which side of the Mac the phone sits on: the light comes out of that edge.
+    var side: Side {
+        didSet { defaults.set(side.rawValue, forKey: Keys.side) }
     }
 
     /// Opens a Finder window on each file as it arrives.
@@ -29,14 +29,14 @@ final class Preferences {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         deviceName = defaults.string(forKey: Keys.deviceName) ?? Host.current().localizedName ?? String(localized: "Mac")
-        edge = defaults.string(forKey: Keys.edge).flatMap(EdgeBloom.Edge.init(rawValue:)) ?? .trailing
+        side = defaults.string(forKey: Keys.side).flatMap(Side.init(rawValue:)) ?? .right
         revealReceivedFiles = defaults.object(forKey: Keys.reveal) as? Bool ?? false
         playsSounds = defaults.object(forKey: Keys.sounds) as? Bool ?? true
     }
 
     private enum Keys {
         static let deviceName = "deviceName"
-        static let edge = "edge"
+        static let side = "side"
         static let reveal = "revealReceivedFiles"
         static let sounds = "playsSounds"
     }

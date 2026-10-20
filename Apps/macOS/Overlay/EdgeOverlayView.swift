@@ -2,61 +2,58 @@ import BetterDropCore
 import BetterDropUI
 import SwiftUI
 
-/// The bloom, and files flying in out of it as they arrive.
+/// The portal of light, and files condensing out of it as they arrive.
 struct EdgeOverlayView: View {
     let model: MacModel
 
     var body: some View {
         ZStack {
-            EdgeBloom(intensity: model.bloomIntensity, edge: model.preferences.edge, waves: model.waveIntensity, burst: model.bursts)
-                .animation(.smooth(duration: 0.35), value: model.closeness)
+            LightPortal(intensity: model.portalIntensity, waves: model.portalWaves, side: model.preferences.side, surge: model.surges)
+                .animation(.smooth(duration: 0.4), value: model.portalIntensity)
+                .animation(.smooth(duration: 0.6), value: model.portalWaves)
             ForEach(model.arrivals) { item in
-                ArrivalCard(item: item, url: model.library.url(for: item), edge: model.preferences.edge) {
+                ArrivalCard(item: item, url: model.library.url(for: item), side: model.preferences.side) {
                     model.arrivals.removeAll { $0.id == item.id }
                 }
             }
-        }
-        .mask {
-            // Fade out towards the middle of the screen, so rings and light never stop at a hard line.
-            LinearGradient(stops: [.init(color: .white, location: 0), .init(color: .white, location: 0.55), .init(color: .clear, location: 1)],
-                           startPoint: model.preferences.edge == .trailing ? .trailing : .leading,
-                           endPoint: model.preferences.edge == .trailing ? .leading : .trailing)
         }
         .ignoresSafeArea()
     }
 }
 
-/// A file that just arrived: it slides out of the edge, floats for a moment so you see what it is, then drifts up
-/// towards the menu bar, where the library is.
+/// A file that just arrived: it condenses out of the light at the edge, floats for a moment so you can see what it
+/// is, then drifts up to the menu bar, where the library lives.
 private struct ArrivalCard: View {
     let item: DropItem
     let url: URL
-    let edge: EdgeBloom.Edge
+    let side: Side
     let onLanded: () -> Void
 
-    private enum Phase { case hidden, shown, leaving }
-    @State private var phase = Phase.hidden
+    private enum Phase { case condensing, shown, leaving }
+    @State private var phase = Phase.condensing
+    @State private var burn: Double = 1
 
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
-            let fromEdge: CGFloat = edge == .trailing ? size.width + 160 : -160
-            let shownX: CGFloat = edge == .trailing ? size.width - 220 : 220
-            ItemCard(item: item, url: url)
-                .frame(width: 200)
-                .padding(10)
-                .background(.ultraThinMaterial, in: .rect(cornerRadius: 22, style: .continuous))
-                .shadow(color: .black.opacity(0.35), radius: 30, y: 12)
-                .environment(\.colorScheme, .dark)
-                .rotationEffect(.degrees(phase == .hidden ? (edge == .trailing ? 14 : -14) : 0))
-                .scaleEffect(phase == .shown ? 1 : (phase == .leaving ? 0.2 : 0.7))
+            let inward: CGFloat = side == .right ? -1 : 1
+            let edgeX: CGFloat = side == .right ? size.width - 40 : 40
+            let shownX = edgeX + inward * 230
+            DropCard(item: item, url: url)
+                .frame(width: 210)
+                .lightDissolve(burn, towards: CGVector(dx: inward, dy: 0))
+                .shadow(color: .black.opacity(0.4), radius: 30, y: 14)
+                .rotation3DEffect(.degrees(phase == .condensing ? Double(inward) * -35 : 0), axis: (x: 0, y: 1, z: 0))
+                .scaleEffect(phase == .leaving ? 0.25 : (phase == .condensing ? 0.85 : 1))
                 .opacity(phase == .leaving ? 0 : 1)
-                .position(x: phase == .hidden ? fromEdge : shownX,
-                          y: phase == .leaving ? -40 : size.height / 2)
+                .position(x: phase == .condensing ? edgeX + inward * 120 : shownX,
+                          y: phase == .leaving ? -60 : size.height * 0.5)
+                .environment(\.colorScheme, .dark)
         }
         .task {
-            withAnimation(.spring(duration: 0.7, bounce: 0.3)) { phase = .shown }
-            try? await Task.sleep(for: .seconds(2.2))
+            withAnimation(.spring(duration: 0.9, bounce: 0.25)) { phase = .shown }
+            withAnimation(.easeOut(duration: 1.0)) { burn = 0 }
+            try? await Task.sleep(for: .seconds(2.6))
             withAnimation(.easeIn(duration: 0.6)) { phase = .leaving }
             try? await Task.sleep(for: .seconds(0.65))
             onLanded()

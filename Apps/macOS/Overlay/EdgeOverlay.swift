@@ -1,28 +1,30 @@
 import AppKit
-import BetterDropUI
+import BetterDropCore
 import SwiftUI
 
 /// The light at the edge of the screen, and the strip you drag files onto to send them.
 ///
-/// Three borderless panels on the screen with the menu bar, at the edge you chose in Settings: the bloom (clicks go
+/// Three borderless panels on the screen with the menu bar, at the side the phone sits: the light (clicks go
 /// straight through it), a thin strip right at the edge that catches dragged files while a phone is connected, and
-/// the pairing prompt when a new phone asks to connect.
+/// the pairing prompt. The light's panel is taken off screen whenever it's dark, so it costs nothing at rest.
 final class EdgeOverlay {
     private let model: MacModel
-    private let bloomPanel: NSPanel
+    private let lightPanel: NSPanel
     private let dropPanel: NSPanel
     private let promptPanel: NSPanel
     private var observer: (any NSObjectProtocol)?
+    private var litUntil = Date.distantPast
+    private var lastSurge = 0
 
-    /// How far into the screen the bloom reaches, as a share of the screen's height.
-    private static let bloomDepth: CGFloat = 0.62
+    /// How far into the screen the light reaches, as a share of the screen's height.
+    private static let lightDepth: CGFloat = 0.7
     private static let dropStripWidth: CGFloat = 10
-    private static let promptSize = CGSize(width: 360, height: 300)
+    private static let promptSize = CGSize(width: 380, height: 360)
 
     init(model: MacModel) {
         self.model = model
-        bloomPanel = Self.makePanel(ignoresMouse: true)
-        bloomPanel.contentView = NSHostingView(rootView: EdgeOverlayView(model: model))
+        lightPanel = Self.makePanel(ignoresMouse: true)
+        lightPanel.contentView = NSHostingView(rootView: EdgeOverlayView(model: model))
         dropPanel = Self.makePanel(ignoresMouse: false)
         dropPanel.contentView = NSHostingView(rootView: DropStrip(model: model))
         promptPanel = Self.makePanel(ignoresMouse: false)
@@ -31,7 +33,6 @@ final class EdgeOverlay {
 
     func start() {
         layout()
-        bloomPanel.orderFrontRegardless()
         observer = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification,
                                                           object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.layout() }
@@ -39,13 +40,16 @@ final class EdgeOverlay {
         track()
     }
 
-    /// Follows the model: shows the drop strip while a phone is connected, the prompt while one asks to pair, and
-    /// moves everything when the edge changes.
+    /// Follows the model and lays the panels out again whenever something they depend on changes.
     private func track() {
         withObservationTracking {
             _ = model.isConnected
             _ = model.pendingApproval
-            _ = model.preferences.edge
+            _ = model.preferences.side
+            _ = model.portalIntensity
+            _ = model.portalWaves
+            _ = model.arrivals.count
+            _ = model.surges
         } onChange: { [weak self] in
             Task { @MainActor in
                 self?.layout()
@@ -57,24 +61,39 @@ final class EdgeOverlay {
     private func layout() {
         guard let screen = NSScreen.screens.first else { return }
         let frame = screen.frame
-        let trailing = model.preferences.edge == .trailing
-        let depth = frame.height * Self.bloomDepth
-        bloomPanel.setFrame(NSRect(x: trailing ? frame.maxX - depth : frame.minX, y: frame.minY, width: depth, height: frame.height),
-                            display: true)
+        let right = model.preferences.side == .right
+        let depth = frame.height * Self.lightDepth
+        lightPanel.setFrame(NSRect(x: right ? frame.maxX - depth : frame.minX, y: frame.minY, width: depth, height: frame.height),
+                            display: false)
+        showLightIfNeeded()
 
         let visible = screen.visibleFrame
-        dropPanel.setFrame(NSRect(x: trailing ? frame.maxX - Self.dropStripWidth : frame.minX, y: visible.minY,
-                                  width: Self.dropStripWidth, height: visible.height), display: true)
+        dropPanel.setFrame(NSRect(x: right ? frame.maxX - Self.dropStripWidth : frame.minX, y: visible.minY,
+                                  width: Self.dropStripWidth, height: visible.height), display: false)
         if model.isConnected { dropPanel.orderFrontRegardless() } else { dropPanel.orderOut(nil) }
 
         let size = Self.promptSize
-        let x = trailing ? visible.maxX - size.width - 48 : visible.minX + 48
-        promptPanel.setFrame(NSRect(x: x, y: visible.midY - size.height / 2, width: size.width, height: size.height), display: true)
+        let x = right ? visible.maxX - size.width - 60 : visible.minX + 60
+        promptPanel.setFrame(NSRect(x: x, y: visible.midY - size.height / 2, width: size.width, height: size.height), display: false)
         if model.pendingApproval != nil {
             promptPanel.makeKeyAndOrderFront(nil)
         } else {
             promptPanel.orderOut(nil)
         }
+    }
+
+    /// The light's panel is up while there's light, and for the length of a surge after the last one.
+    private func showLightIfNeeded() {
+        if model.surges != lastSurge {
+            lastSurge = model.surges
+            litUntil = .now.addingTimeInterval(1.7)
+            Task { [weak self] in
+                try? await Task.sleep(for: .seconds(1.8))
+                self?.showLightIfNeeded()
+            }
+        }
+        let lit = model.portalIntensity > 0.002 || model.portalWaves > 0.002 || !model.arrivals.isEmpty || litUntil > .now
+        if lit { lightPanel.orderFrontRegardless() } else { lightPanel.orderOut(nil) }
     }
 
     private static func makePanel(ignoresMouse: Bool) -> NSPanel {

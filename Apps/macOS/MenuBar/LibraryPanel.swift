@@ -5,7 +5,7 @@ import QuickLook
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// What opens from the menu bar: who's connected, and every file, in the same grid as on the phone.
+/// What opens from the menu bar: who's connected, and every file, in the same cards as on the phone.
 struct LibraryPanel: View {
     @Environment(MacModel.self) private var model
     @State private var preview: URL?
@@ -18,20 +18,20 @@ struct LibraryPanel: View {
                 ErrorBanner(message: error) { model.dismissError() }
             }
             ScrollView {
-                if model.library.items.isEmpty && incoming.isEmpty {
-                    EmptyLibraryView(message: "Hold your iPhone next to your Mac and fling a file off its screen, or drop files here to send them.")
-                        .frame(maxWidth: .infinity, minHeight: 360)
+                if model.library.items.isEmpty && model.incoming.isEmpty {
+                    EmptyState()
                 } else {
-                    MasonryLayout(columns: 3, spacing: 12) {
-                        ForEach(incoming) { transfer in
+                    MasonryLayout(columns: 3, spacing: 10) {
+                        ForEach(model.incoming) { transfer in
                             IncomingCard(transfer: transfer)
                         }
                         ForEach(model.library.items) { item in
                             card(for: item)
                         }
                     }
-                    .padding(14)
-                    .animation(.spring(duration: 0.45, bounce: 0.25), value: model.library.items)
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 14)
+                    .animation(.spring(duration: 0.5, bounce: 0.25), value: model.library.items)
                 }
             }
             .scrollIndicators(.never)
@@ -44,25 +44,21 @@ struct LibraryPanel: View {
             } isTargeted: { isTargeted = $0 }
             Footer()
         }
-        .frame(width: 400, height: 580)
+        .frame(width: 420, height: 600)
+        .background(Glow.ink.opacity(0.55))
+        .environment(\.colorScheme, .dark)
         .quickLookPreview($preview, in: model.library.items.map { model.library.url(for: $0) })
         .onAppear { model.library.refresh() }
     }
 
-    private var incoming: [Transfer] {
-        model.transfers.values.filter { $0.direction == .incoming }.sorted { $0.name < $1.name }
-    }
-
     private func card(for item: DropItem) -> some View {
         let url = model.library.url(for: item)
-        return ItemCard(item: item, url: url, progress: model.progress(for: item)) {
-            ItemMenu(item: item, url: url, preview: $preview)
-        }
-        .onTapGesture(count: 2) { NSWorkspace.shared.open(url) }
-        .onTapGesture { preview = url }
-        .onDrag { NSItemProvider(contentsOf: url) ?? NSItemProvider() }
-        .contextMenu { ItemMenu(item: item, url: url, preview: $preview) }
-        .transition(.scale(scale: 0.6).combined(with: .opacity))
+        return DropCard(item: item, url: url, progress: model.progress(for: item))
+            .onTapGesture(count: 2) { NSWorkspace.shared.open(url) }
+            .onTapGesture { preview = url }
+            .onDrag { NSItemProvider(contentsOf: url) ?? NSItemProvider() }
+            .contextMenu { ItemMenu(item: item, url: url, preview: $preview) }
+            .transition(.blurReplace)
     }
 
     /// Dropped onto the panel: straight to the phone when there is one, otherwise into the library.
@@ -80,40 +76,49 @@ private struct Header: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: "sparkles")
-                .font(.title3)
-                .glowingForeground()
-            Text("BetterDrop")
-                .font(.headline)
+            Wordmark(size: 16, isLit: model.isConnected)
             Spacer()
-            ConnectionPill()
+            HStack(spacing: 6) {
+                if let phone = model.currentPhone {
+                    Image(systemName: phone.kind.symbolName)
+                    Text(phone.name).lineLimit(1)
+                } else {
+                    Text(model.pairedDevices.isEmpty ? "No iPhone yet" : "iPhone not nearby")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .font(.caption.weight(.semibold))
+            .padding(.horizontal, 11)
+            .padding(.vertical, 6)
+            .glassEffect(.regular, in: .capsule)
+            .help(model.isConnected ? "Drag files to the edge of your screen to send them." : "Open BetterDrop on your iPhone and hold it next to your Mac.")
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.top, 14)
+        .padding(.bottom, 12)
     }
 }
 
-private struct ConnectionPill: View {
+/// Before anything's here: how it works, around a sleepy orb.
+private struct EmptyState: View {
     @Environment(MacModel.self) private var model
 
     var body: some View {
-        HStack(spacing: 6) {
-            Circle()
-                .fill(model.isConnected ? Color.green : Color.secondary.opacity(0.5))
-                .frame(width: 7, height: 7)
-                .shadow(color: model.isConnected ? .green : .clear, radius: 4)
-            if let phone = model.currentPhone {
-                Image(systemName: phone.kind.symbolName)
-                Text(phone.name).lineLimit(1)
-            } else {
-                Text(model.pairedDevices.isEmpty ? "No iPhone yet" : "Waiting for iPhone")
-            }
+        VStack(spacing: 14) {
+            LightOrb(energy: model.isConnected ? 0.6 : 0.2,
+                     lean: CGVector(dx: model.preferences.side == .right ? 0.4 : -0.4, dy: 0))
+                .frame(width: 150, height: 150)
+            Text(model.pairedDevices.isEmpty ? "Bring your iPhone over" : "Nothing here yet")
+                .font(.brand(20, weight: .semibold))
+            Text(model.pairedDevices.isEmpty
+                 ? "Open BetterDrop on your iPhone and hold it against the \(model.preferences.side == .right ? "right" : "left") side of your screen."
+                 : "Throw a file off your iPhone towards the Mac, or drop files here or on the edge of the screen to send them.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 300)
         }
-        .font(.caption.weight(.medium))
-        .padding(.horizontal, 10)
-        .padding(.vertical, 5)
-        .glassEffect(.regular, in: .capsule)
-        .help(model.isConnected ? "Drag files to the edge of your screen to send them." : "Open BetterDrop on your iPhone and hold it next to your Mac.")
+        .frame(maxWidth: .infinity, minHeight: 420)
     }
 }
 
@@ -151,8 +156,8 @@ private struct Footer: View {
         .labelStyle(.iconOnly)
         .buttonStyle(.borderless)
         .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(.bar)
+        .padding(.vertical, 11)
+        .background(.white.opacity(0.04))
     }
 
     private func addFiles() {
@@ -211,9 +216,10 @@ private struct ErrorBanner: View {
                 .buttonStyle(.borderless)
         }
         .padding(10)
-        .background(.orange.opacity(0.12), in: .rect(cornerRadius: 10))
-        .padding(.horizontal, 12)
-        .transition(.move(edge: .top).combined(with: .opacity))
+        .background(.orange.opacity(0.12), in: .rect(cornerRadius: 12, style: .continuous))
+        .padding(.horizontal, 14)
+        .padding(.bottom, 8)
+        .transition(.blurReplace)
     }
 }
 
@@ -222,13 +228,16 @@ private struct DropHighlight: View {
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.black.opacity(0.35))
-            GlowBorder(intensity: 1, cornerRadius: 16)
-            Label(connected ? "Drop to send to your iPhone" : "Drop to add to BetterDrop",
-                  systemImage: connected ? "iphone.and.arrow.forward" : "plus")
-                .font(.headline)
-                .foregroundStyle(.white)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(.black.opacity(0.45))
+            EdgeGlow(intensity: 0.9, cornerRadius: 18)
+            VStack(spacing: 8) {
+                Image(systemName: connected ? "iphone.and.arrow.forward" : "plus")
+                    .font(.system(size: 30, weight: .light))
+                    .glowingForeground()
+                Text(connected ? "Drop to send to your iPhone" : "Drop to add to BetterDrop")
+                    .font(.brand(16, weight: .semibold))
+            }
         }
         .padding(8)
         .allowsHitTesting(false)

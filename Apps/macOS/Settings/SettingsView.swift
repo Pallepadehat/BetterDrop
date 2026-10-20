@@ -7,10 +7,11 @@ struct SettingsView: View {
     var body: some View {
         TabView {
             Tab("General", systemImage: "gearshape") { GeneralSettings() }
+            Tab("About", systemImage: "info.circle") { AboutSettings() }
             Tab("Devices", systemImage: "iphone") { DevicesSettings() }
             Tab("Updates", systemImage: "sparkles") { UpdatesSettings() }
         }
-        .frame(width: 480, height: 340)
+        .frame(width: 500, height: 380)
     }
 }
 
@@ -25,11 +26,11 @@ private struct GeneralSettings: View {
             TextField("This Mac's name", text: $name)
                 .onSubmit { model.rename(name) }
                 .onAppear { name = model.device.name }
-            Picker("Your iPhone sits on the", selection: $preferences.edge) {
-                Text("Left of the screen").tag(EdgeBloom.Edge.leading)
-                Text("Right of the screen").tag(EdgeBloom.Edge.trailing)
+            Picker("Your iPhone sits on the", selection: $preferences.side) {
+                Text("Left of the screen").tag(Side.left)
+                Text("Right of the screen").tag(Side.right)
             }
-            .onChange(of: preferences.edge) { model.edgeChanged() }
+            .onChange(of: preferences.side) { model.sideChanged() }
             Toggle("Show files in Finder when they arrive", isOn: $preferences.revealReceivedFiles)
             Toggle("Play sounds", isOn: $preferences.playsSounds)
             Toggle("Open BetterDrop when you log in", isOn: $launchesAtLogin)
@@ -80,6 +81,25 @@ private struct DevicesSettings: View {
             }
         }
         .formStyle(.grouped)
+    }
+}
+
+private struct AboutSettings: View {
+    var body: some View {
+        VStack(spacing: 12) {
+            LightOrb(energy: 0.7)
+                .frame(width: 140, height: 140)
+            Wordmark(size: 24)
+            Text("Version \(Bundle.main.version)")
+                .foregroundStyle(.secondary)
+            Text("Files go straight between your devices, end-to-end encrypted, never through the internet.")
+                .font(.callout)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: 340)
+            Link("BetterDrop on GitHub", destination: URL(string: "https://github.com/Pallepadehat/BetterDrop")!)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
