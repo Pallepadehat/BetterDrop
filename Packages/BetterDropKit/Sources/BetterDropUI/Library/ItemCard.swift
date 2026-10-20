@@ -51,25 +51,39 @@ public struct DropCard<Menu: View>: View {
             .overlay { if let progress { ProgressVeil(progress: progress) } }
             .overlay(alignment: .bottomTrailing) {
                 if showsMenu, !(menu is EmptyView) {
-                    SwiftUI.Menu {
-                        menu
-                    } label: {
-                        Image(systemName: "ellipsis")
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(.white)
-                            .frame(width: 30, height: 30)
-                            .contentShape(.rect)
-                    }
-                    .menuStyle(.button)
-                    .buttonStyle(.plain)
-                    .menuIndicator(.hidden)
-                    .fixedSize()
-                    .padding(4)
+                    CardMenuButton { menu }
                 }
             }
             .contentShape(shape)
             .accessibilityElement(children: .combine)
             .accessibilityLabel(Text("\(item.name), \(item.caption)"))
+    }
+}
+
+/// The "…" in a card's corner. Platform menus can't be drawn through a shader, so when a card has effects on it,
+/// put this over the card *after* the effects rather than inside it.
+public struct CardMenuButton<Content: View>: View {
+    private let content: Content
+
+    public init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    public var body: some View {
+        Menu {
+            content
+        } label: {
+            Image(systemName: "ellipsis")
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: 30, height: 30)
+                .contentShape(.rect)
+        }
+        .menuStyle(.button)
+        .buttonStyle(.plain)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .padding(4)
     }
 }
 

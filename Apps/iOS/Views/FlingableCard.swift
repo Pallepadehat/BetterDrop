@@ -30,8 +30,15 @@ struct FlingableCard<Menu: View>: View {
     private static var flingDistance: CGFloat { 360 }
 
     var body: some View {
-        DropCard(item: item, url: url, progress: progress, showsMenu: burn == 0 && !isLifted, menu: menu)
+        DropCard(item: item, url: url, progress: progress)
             .lightDissolve(burn, towards: heading)
+            // Over the shader, not in it: a system menu inside a shader effect draws as a placeholder.
+            .overlay(alignment: .bottomTrailing) {
+                if burn == 0 && !isLifted {
+                    CardMenuButton(content: menu)
+                        .transition(.opacity)
+                }
+            }
             .rotation3DEffect(.degrees(isLifted ? Double(offset.width) / 9 : 0), axis: (x: 0, y: 1, z: 0), perspective: 0.6)
             .rotation3DEffect(.degrees(isLifted ? Double(-offset.height) / 14 : 0), axis: (x: 1, y: 0, z: 0), perspective: 0.6)
             .scaleEffect(isLifted ? 1.06 : 1)
