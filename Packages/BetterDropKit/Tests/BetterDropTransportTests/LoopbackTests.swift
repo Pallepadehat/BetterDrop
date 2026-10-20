@@ -14,8 +14,8 @@ struct LoopbackTests {
     let macStore = MemoryPairingStore()
 
     /// Starts a listener on localhost that accepts every phone (or none), and returns its port and the Mac's links.
-    private func startMac(approve: Bool = true) async throws -> (DeviceAdvertiser, NWEndpoint.Port, AsyncStream<Link>) {
-        let (links, linksContinuation) = AsyncStream.makeStream(of: Link.self)
+    private func startMac(approve: Bool = true) async throws -> (DeviceAdvertiser, NWEndpoint.Port, AsyncStream<PeerLink>) {
+        let (links, linksContinuation) = AsyncStream.makeStream(of: PeerLink.self)
         let mac = mac, store = macStore
         let advertiser = DeviceAdvertiser(device: mac, advertises: false) { connection in
             Task {
@@ -23,7 +23,7 @@ struct LoopbackTests {
                 guard (try? await connection.start()) != nil,
                       let (channel, peer) = try? await ServerHandshake.accept(connection, as: mac, store: store, approve: { _ in approve })
                 else { return }
-                let link = Link(channel: channel, peer: peer, inbox: FileManager.default.temporaryDirectory.appending(path: "mac-inbox-\(UUID())"))
+                let link = PeerLink(channel: channel, peer: peer, inbox: FileManager.default.temporaryDirectory.appending(path: "mac-inbox-\(UUID())"))
                 await link.start()
                 linksContinuation.yield(link)
             }
@@ -57,7 +57,7 @@ struct LoopbackTests {
 
         let (channel, peer) = try await ClientHandshake.startSession(over: connection, as: phone, with: pairing)
         #expect(peer == mac)
-        let phoneLink = Link(channel: channel, peer: peer, inbox: FileManager.default.temporaryDirectory.appending(path: "phone-inbox-\(UUID())"))
+        let phoneLink = PeerLink(channel: channel, peer: peer, inbox: FileManager.default.temporaryDirectory.appending(path: "phone-inbox-\(UUID())"))
         await phoneLink.start()
         var macLinkIterator = macLinks.makeAsyncIterator()
         let macLink = try #require(await macLinkIterator.next())

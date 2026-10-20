@@ -2,7 +2,7 @@ import BetterDropCore
 import CryptoKit
 import Foundation
 
-/// What happens on a ``Link``, in order.
+/// What happens on a ``PeerLink``, in order.
 public enum LinkEvent: Sendable {
     /// The other side started sending us a file.
     case incomingStarted(FileOffer)
@@ -28,9 +28,11 @@ public enum LinkEvent: Sendable {
 /// Files go in 256 KB chunks, in order, each one handed to the network before the next is read, so sending a huge
 /// video doesn't fill memory. The receiver hashes as it writes and checks the SHA-256 at the end; a file only shows
 /// up in ``LinkEvent/incomingFinished(_:_:)`` once it's whole and matches.
-public actor Link {
+public actor PeerLink {
     public nonisolated let peer: DeviceInfo
     public nonisolated let events: AsyncStream<LinkEvent>
+    /// The other device's IP address, for reaching its file server.
+    public nonisolated var remoteHost: String? { channel.remoteHost }
 
     static let chunkSize = 256 * 1024
 
@@ -62,7 +64,7 @@ public actor Link {
         }
     }
 
-    public init(channel: SecureChannel, peer: DeviceInfo, inbox: URL = Link.defaultInbox) {
+    public init(channel: SecureChannel, peer: DeviceInfo, inbox: URL = PeerLink.defaultInbox) {
         self.channel = channel
         self.peer = peer
         self.inbox = inbox

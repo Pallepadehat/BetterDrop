@@ -43,7 +43,7 @@ public final class BackgroundTransfers: NSObject, @unchecked Sendable {
     /// while we weren't running). Pass nil for an ordinary session, for tests.
     public init(identifier: String?, store: any PairingStore,
                 outbox: URL = URL.cachesDirectory.appending(path: "BetterDrop Outbox", directoryHint: .isDirectory),
-                inbox: URL = Link.defaultInbox) {
+                inbox: URL = PeerLink.defaultInbox) {
         self.store = store
         self.outbox = outbox
         self.inbox = inbox

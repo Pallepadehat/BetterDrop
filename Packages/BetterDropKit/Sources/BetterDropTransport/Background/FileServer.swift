@@ -36,7 +36,7 @@ public final class FileServer: Sendable {
         let expires: Date
     }
 
-    public init(store: any PairingStore, inbox: URL = Link.defaultInbox, port: NWEndpoint.Port = .any) throws {
+    public init(store: any PairingStore, inbox: URL = PeerLink.defaultInbox, port: NWEndpoint.Port = .any) throws {
         self.store = store
         self.inbox = inbox
         let tcp = NWProtocolTCP.Options()

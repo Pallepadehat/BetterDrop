@@ -27,6 +27,9 @@ public actor SecureChannel {
         return try MessageCodec.decode(session.open(record))
     }
 
+    /// The other end's IP address, when there is one.
+    public nonisolated var remoteHost: String? { connection.remoteHost }
+
     public nonisolated func close() {
         connection.cancel()
     }
