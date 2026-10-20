@@ -40,6 +40,8 @@ public struct PairResult: Codable, Sendable, Equatable {
     public var accepted: Bool
     /// Proves the Mac derived the same secret, so the phone knows the code it showed was the one that was accepted.
     public var proof: Data?
+
+    public static let declined = PairResult(accepted: false, proof: nil)
 }
 
 public struct ClientHello: Codable, Sendable, Equatable {
