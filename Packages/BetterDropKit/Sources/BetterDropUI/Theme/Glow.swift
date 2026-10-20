@@ -1,33 +1,35 @@
 import SwiftUI
 
-/// The colours of the glow: the warm-to-cool sweep of light around the edge of the screen.
+/// BetterDrop's colours: the warm-to-cool sweep of light the shaders draw, for when SwiftUI needs them too.
 public enum Glow {
     public static let colors: [Color] = [
-        Color(red: 0.74, green: 0.51, blue: 0.95), // lavender
-        Color(red: 0.96, green: 0.73, blue: 0.92), // pink
-        Color(red: 0.55, green: 0.62, blue: 1.00), // periwinkle
-        Color(red: 1.00, green: 0.40, blue: 0.47), // coral
-        Color(red: 1.00, green: 0.73, blue: 0.44), // apricot
-        Color(red: 0.78, green: 0.53, blue: 1.00), // violet
-        Color(red: 0.98, green: 0.30, blue: 0.75), // magenta
+        Color(red: 1.00, green: 0.62, blue: 0.38), // apricot
+        Color(red: 1.00, green: 0.42, blue: 0.56), // rose
+        Color(red: 0.86, green: 0.40, blue: 0.95), // orchid
+        Color(red: 0.58, green: 0.50, blue: 1.00), // violet
+        Color(red: 0.45, green: 0.66, blue: 1.00), // periwinkle
     ]
 
-    /// The gradient for text that glows, like a Mac's name while you hold the phone to it.
-    public static let text = LinearGradient(
-        colors: [Color(red: 1.0, green: 0.55, blue: 0.25), Color(red: 1.0, green: 0.33, blue: 0.55),
-                 Color(red: 0.86, green: 0.36, blue: 0.93), Color(red: 0.55, green: 0.5, blue: 1.0)],
-        startPoint: .leading, endPoint: .trailing)
+    /// For text and symbols that glow.
+    public static let text = LinearGradient(colors: colors, startPoint: .leading, endPoint: .trailing)
 
-    /// The colours spread around the edge in a new random arrangement, so the light keeps moving.
-    static func randomStops() -> [Gradient.Stop] {
-        colors.map { Gradient.Stop(color: $0, location: Double.random(in: 0...1)) }
-            .sorted { $0.location < $1.location }
-    }
+    /// Round the colour wheel, for rings.
+    public static let ring = AngularGradient(colors: colors + [colors[0]], center: .center)
+
+    /// The near-black every surface sits on.
+    public static let ink = Color(red: 0.03, green: 0.03, blue: 0.05)
 }
 
 public extension View {
-    /// Fills text (or anything) with the glow gradient.
+    /// Fills text (or a symbol) with the glow gradient.
     func glowingForeground() -> some View {
         foregroundStyle(Glow.text)
+    }
+}
+
+public extension Font {
+    /// BetterDrop's display type: SF Pro Rounded, heavy, a little tight.
+    static func brand(_ size: CGFloat, weight: Font.Weight = .bold) -> Font {
+        .system(size: size, weight: weight, design: .rounded)
     }
 }
