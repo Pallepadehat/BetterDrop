@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Package tests
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use the newest Xcode
+        run: sudo xcode-select -s "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+      - name: Test BetterDropKit
+        run: swift test --package-path Packages/BetterDropKit
+
+  build:
+    name: Build ${{ matrix.platform }}
+    runs-on: macos-26
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macOS
+            scheme: BetterDrop macOS
+            destination: generic/platform=macOS
+          - platform: iOS
+            scheme: BetterDrop iOS
+            destination: generic/platform=iOS Simulator
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use the newest Xcode
+        run: sudo xcode-select -s "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+      - name: Check the Xcode project matches project.yml
+        run: |
+          brew install xcodegen
+          xcodegen generate --quiet
+          git diff --exit-code -- BetterDrop.xcodeproj || { echo "::error::Run xcodegen generate and commit the project."; exit 1; }
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: build/SourcePackages
+          key: spm-${{ hashFiles('BetterDrop.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+      - name: Build
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project BetterDrop.xcodeproj -scheme "${{ matrix.scheme }}" \
+            -destination "${{ matrix.destination }}" \
+            -clonedSourcePackagesDirPath build/SourcePackages \
+            -skipMacroValidation -skipPackagePluginValidation \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY= DEVELOPMENT_TEAM= \
+            | xcbeautify

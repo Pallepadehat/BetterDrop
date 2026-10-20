@@ -1,0 +1,26 @@
+name: Bug report
+description: Something didn't arrive, didn't connect, or didn't look right.
+labels: [bug]
+body:
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: And what did you expect? Screen recordings help a lot.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: How can we make it happen?
+      placeholder: "1. Pair the iPhone\n2. Throw a 2 GB video\n3. ..."
+  - type: input
+    attributes:
+      label: Devices and versions
+      placeholder: iPhone 15 Pro on iOS 26.1, MacBook Pro M3 on macOS 26.1, BetterDrop 0.1.0
+  - type: dropdown
+    attributes:
+      label: Network
+      options:
+        - Same Wi-Fi
+        - Mac on Ethernet, iPhone on Wi-Fi
+        - No shared network (peer-to-peer)
+        - Not sure

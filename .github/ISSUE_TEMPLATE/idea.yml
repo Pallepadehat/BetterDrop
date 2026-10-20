@@ -1,0 +1,10 @@
+name: Idea
+description: A new effect, a better gesture, something that should just work.
+labels: [enhancement]
+body:
+  - type: textarea
+    attributes:
+      label: What should BetterDrop do?
+      description: Sketches, recordings and references welcome.
+    validations:
+      required: true
