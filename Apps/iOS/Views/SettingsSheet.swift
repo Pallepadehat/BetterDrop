@@ -1,5 +1,5 @@
 import BetterDropCore
-import BetterDropTransport
+import BetterDropUI
 import SwiftUI
 
 struct SettingsSheet: View {
@@ -11,6 +11,16 @@ struct SettingsSheet: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    VStack(spacing: 10) {
+                        LightOrb(energy: model.isConnected ? 0.7 : 0.25)
+                            .frame(width: 110, height: 110)
+                        Wordmark(size: 20)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .listRowBackground(Color.clear)
+                }
+
                 Section {
                     TextField("Name", text: $name)
                         .onSubmit { model.rename(name) }
@@ -40,7 +50,7 @@ struct SettingsSheet: View {
                 } header: {
                     Text("About")
                 } footer: {
-                    Text("Your files are in the Files app too, under On My iPhone → BetterDrop. Everything goes straight between your devices, encrypted, never through the internet.")
+                    Text("Your files are in the Files app too, under On My iPhone → BetterDrop. Everything goes straight between your devices, end-to-end encrypted, never through the internet. Files over 8 MB carry on in the background.")
                 }
             }
             .navigationTitle("Settings")

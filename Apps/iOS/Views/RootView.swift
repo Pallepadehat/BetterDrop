@@ -1,7 +1,7 @@
 import BetterDropUI
 import SwiftUI
 
-/// Connect first; after that, the library. The glow sits on top of everything, around the edge of the screen.
+/// Connect first; after that, the library. The edge light sits over everything.
 struct RootView: View {
     @Environment(PhoneModel.self) private var model
 
@@ -9,18 +9,15 @@ struct RootView: View {
         ZStack {
             if model.pairedMac == nil {
                 ConnectView()
-                    .transition(.opacity.combined(with: .scale(scale: 1.04)))
+                    .transition(.blurReplace)
             } else {
                 LibraryScreen()
-                    .transition(.opacity)
-            }
-            if model.pairedMac != nil {
-                GlowBorder(intensity: model.glowIntensity, emphasis: model.macSide == .left ? .leading : .trailing)
-                Shockwave(trigger: model.bursts, center: UnitPoint(x: model.macSide == .left ? 0 : 1, y: 0.45))
-                    .ignoresSafeArea()
+                    .transition(.blurReplace)
+                EdgeGlow(intensity: model.edgeIntensity, emphasis: model.macEdge, surge: model.surges)
+                    .animation(.smooth(duration: 0.35), value: model.edgeIntensity)
             }
         }
-        .animation(.smooth(duration: 0.5), value: model.pairedMac == nil)
+        .animation(.smooth(duration: 0.7), value: model.pairedMac == nil)
         .sensoryFeedback(.success, trigger: model.arrivals)
         .sensoryFeedback(.impact(weight: .medium), trigger: model.departures)
     }

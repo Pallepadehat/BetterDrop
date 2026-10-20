@@ -130,6 +130,10 @@ targets:
         NSBonjourServices: [_betterdrop._tcp]
         UILaunchScreen:
           UIColorName: LaunchBackground
+        # Big files go to the Mac's file server over plain HTTP on the local network (already end-to-end
+        # encrypted with the pairing key), which is what lets iOS keep moving them in the background.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
     settings:

@@ -1,30 +1,44 @@
 import BetterDropCore
 import BetterDropUI
 import SwiftUI
+import UIKit
 
-/// The floating glass bar at the bottom: the Mac, adding files, how many there are, and more.
+/// A floating glass bar: how many files, and adding more.
 struct BottomBar: View {
     @Environment(PhoneModel.self) private var model
     let pickPhotos: () -> Void
     let importFiles: () -> Void
-    let showSettings: () -> Void
+    @State private var confirmingClear = false
 
     var body: some View {
-        GlassEffectContainer(spacing: 12) {
-            HStack(spacing: 12) {
-                Button(action: showSettings) {
-                    Image(systemName: "laptopcomputer")
-                        .overlay(alignment: .topTrailing) {
-                            Circle()
-                                .fill(model.isConnected ? .green : .gray)
-                                .frame(width: 8, height: 8)
-                                .shadow(color: model.isConnected ? .green : .clear, radius: 3)
-                                .offset(x: 5, y: -3)
-                        }
-                        .frame(width: 48, height: 48)
+        GlassEffectContainer(spacing: 14) {
+            HStack(spacing: 14) {
+                Menu {
+                    Button("Delete All", systemImage: "trash", role: .destructive) { confirmingClear = true }
+                        .disabled(model.library.items.isEmpty)
+                } label: {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("\(model.library.items.count) items")
+                            .font(.footnote.weight(.semibold))
+                            .contentTransition(.numericText())
+                        Text(model.library.totalByteCount.fileSize)
+                            .font(.caption2)
+                            .foregroundStyle(.white.opacity(0.6))
+                            .contentTransition(.numericText())
+                    }
+                    .padding(.horizontal, 18)
+                    .frame(height: 54)
                 }
-                .glassEffect(.regular.interactive(), in: .circle)
-                .accessibilityLabel(model.isConnected ? "Connected to \(model.pairedMac?.device.name ?? "Mac")" : "Not connected")
+                .glassEffect(.regular.interactive(), in: .capsule)
+                .animation(.default, value: model.library.items.count)
+
+                Spacer(minLength: 0)
+
+                Button("Photos", systemImage: "photo.on.rectangle.angled", action: pickPhotos)
+                    .labelStyle(.iconOnly)
+                    .font(.system(size: 19, weight: .semibold))
+                    .frame(width: 54, height: 54)
+                    .glassEffect(.regular.interactive(), in: .circle)
 
                 Menu {
                     Button("Photos & Videos", systemImage: "photo.on.rectangle", action: pickPhotos)
@@ -32,41 +46,19 @@ struct BottomBar: View {
                     Button("Paste", systemImage: "doc.on.clipboard") { Task { await paste() } }
                 } label: {
                     Image(systemName: "plus")
-                        .font(.title3.weight(.semibold))
-                        .frame(width: 48, height: 48)
+                        .font(.system(size: 22, weight: .semibold))
+                        .frame(width: 54, height: 54)
                 }
-                .glassEffect(.regular.interactive(), in: .circle)
+                .glassEffect(.regular.tint(Glow.colors[2].opacity(0.55)).interactive(), in: .circle)
                 .accessibilityLabel("Add")
-
-                Spacer(minLength: 0)
-
-                Text("\(model.library.items.count) items")
-                    .font(.footnote.weight(.medium))
-                    .foregroundStyle(.secondary)
-                    .contentTransition(.numericText())
-                    .animation(.default, value: model.library.items.count)
-
-                Spacer(minLength: 0)
-
-                Menu {
-                    Button("Settings", systemImage: "gearshape", action: showSettings)
-                    Divider()
-                    Button("Delete All", systemImage: "trash", role: .destructive) {
-                        withAnimation { model.library.removeAll() }
-                    }
-                    .disabled(model.library.items.isEmpty)
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .font(.title3.weight(.semibold))
-                        .frame(width: 48, height: 48)
-                }
-                .glassEffect(.regular.interactive(), in: .circle)
-                .accessibilityLabel("More")
             }
         }
         .foregroundStyle(.white)
-        .padding(.horizontal, 20)
-        .padding(.bottom, 4)
+        .padding(.horizontal, 18)
+        .padding(.bottom, 2)
+        .confirmationDialog("Delete all \(model.library.items.count) files?", isPresented: $confirmingClear, titleVisibility: .visible) {
+            Button("Delete All", role: .destructive) { withAnimation { model.library.removeAll() } }
+        }
     }
 
     /// Whatever's on the clipboard becomes a file: pictures as PNG, text as a .txt.
@@ -74,15 +66,18 @@ struct BottomBar: View {
         let pasteboard = UIPasteboard.general
         let folder = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        let stamp = Date.now.formatted(.dateTime.year().month().day().hour().minute().second()).replacingOccurrences(of: "/", with: "-")
-        var url: URL?
+        let stamp = Date.now.formatted(.iso8601.year().month().day().time(includingFractionalSeconds: false)).replacingOccurrences(of: ":", with: ".")
+        let file: URL
         if let image = pasteboard.image, let data = image.pngData() {
-            url = folder.appending(path: "Pasted Image \(stamp).png")
-            try? data.write(to: url!)
+            file = folder.appending(path: "Pasted Image \(stamp).png")
+            try? data.write(to: file)
         } else if let text = pasteboard.string {
-            url = folder.appending(path: "Pasted Text \(stamp).txt")
-            try? Data(text.utf8).write(to: url!)
+            file = folder.appending(path: "Pasted Text \(stamp).txt")
+            try? Data(text.utf8).write(to: file)
+        } else {
+            model.lastError = String(localized: "There's nothing to paste.")
+            return
         }
-        if let url { await model.add([url], move: true) } else { model.lastError = String(localized: "There's nothing to paste.") }
+        await model.add([file], move: true)
     }
 }
