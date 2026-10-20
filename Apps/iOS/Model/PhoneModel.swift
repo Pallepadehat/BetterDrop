@@ -65,6 +65,9 @@ final class PhoneModel {
         guard maintaining == nil else { return }
         maintaining = Task { await maintainConnection() }
         reportingProximity = Task { await reportProximity() }
+        #if DEBUG
+        runDemo()
+        #endif
     }
 
     func suspend() {

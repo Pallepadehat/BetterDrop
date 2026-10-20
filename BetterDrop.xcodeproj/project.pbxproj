@@ -13,6 +13,7 @@
 		29F9C776A30780E8CE721E1F /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 2BF3A707BC3340F4BE141ECA /* Sparkle */; };
 		2E4E2E5688271AC0F816CD60 /* Updates.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69B5CDBF21CB61660A4123D /* Updates.swift */; };
 		33F55C99A00B4B46F566476B /* PairingPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB20C19067AF30DC6BB6EB7 /* PairingPromptView.swift */; };
+		3D2A6A373F0DC399134CEB10 /* Demo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53CD8FDB816A22D1BC88137D /* Demo.swift */; };
 		3E1B6EA6F926D45750A225E5 /* BetterDropMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE60DF25AD1616C4D1D7BD0D /* BetterDropMacApp.swift */; };
 		3FE2E2BB3F79E7650B2B297E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4F05223758A67EB1E01882 /* SettingsView.swift */; };
 		41818F9033FBC3114F406F9C /* EdgeOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A07E373727DD13718CBA3E /* EdgeOverlayView.swift */; };
@@ -29,6 +30,7 @@
 		8F26A588AA3C98CCD0561B14 /* LibraryScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A48D52A6927E62013BE290 /* LibraryScreen.swift */; };
 		954B16C7453D5283DC568204 /* BetterDropTransport in Frameworks */ = {isa = PBXBuildFile; productRef = F6AB1BB4824391F5A5D7C7A7 /* BetterDropTransport */; };
 		A1C37DC11113D6BA42786786 /* BetterDropUI in Frameworks */ = {isa = PBXBuildFile; productRef = 87132DA4B032492C45DD2577 /* BetterDropUI */; };
+		B825637D8351BAB3572CBD91 /* Demo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D55CC7DE97097AC002E1F8A /* Demo.swift */; };
 		BAAA32B5D9A22F2DF5DDD981 /* LibraryPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D66159E7CD751A0990AAB58 /* LibraryPanel.swift */; };
 		BE9917E757A82172AA82EADF /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3AE83EB3A44E55AC72C7D2 /* Preferences.swift */; };
 		ED34C6FC9C3DEABBB890B26E /* EdgeOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B67A134276690363AEFE3B8 /* EdgeOverlay.swift */; };
@@ -47,8 +49,10 @@
 		38755739C626452A3C0246F1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		39A40822162E33267511378B /* PickedFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickedFile.swift; sourceTree = "<group>"; };
 		42018D9BD02311E07358B420 /* BetterDrop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BetterDrop.entitlements; sourceTree = "<group>"; };
+		53CD8FDB816A22D1BC88137D /* Demo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Demo.swift; sourceTree = "<group>"; };
 		59CD8247C5094E680A7B4ECB /* SettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSheet.swift; sourceTree = "<group>"; };
 		5D4F05223758A67EB1E01882 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		5D55CC7DE97097AC002E1F8A /* Demo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Demo.swift; sourceTree = "<group>"; };
 		64DDDD591F156BB8158FEEC0 /* ConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectView.swift; sourceTree = "<group>"; };
 		7CC7E4228C50C9F4AE5F07D2 /* BetterDropApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BetterDropApp.swift; sourceTree = "<group>"; };
 		8E62B72F5BF1F11E8E27F2D3 /* PhoneModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneModel.swift; sourceTree = "<group>"; };
@@ -185,6 +189,7 @@
 		AF2BB7BC41A42EBFBFB32CCB /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				53CD8FDB816A22D1BC88137D /* Demo.swift */,
 				8E62B72F5BF1F11E8E27F2D3 /* PhoneModel.swift */,
 				39A40822162E33267511378B /* PickedFile.swift */,
 			);
@@ -194,6 +199,7 @@
 		D0A934661CC8E3E2D6E8E71E /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				5D55CC7DE97097AC002E1F8A /* Demo.swift */,
 				06690DEF6384E65D3AE28054 /* MacModel.swift */,
 				AE3AE83EB3A44E55AC72C7D2 /* Preferences.swift */,
 			);
@@ -343,6 +349,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3E1B6EA6F926D45750A225E5 /* BetterDropMacApp.swift in Sources */,
+				B825637D8351BAB3572CBD91 /* Demo.swift in Sources */,
 				ED34C6FC9C3DEABBB890B26E /* EdgeOverlay.swift in Sources */,
 				41818F9033FBC3114F406F9C /* EdgeOverlayView.swift in Sources */,
 				BAAA32B5D9A22F2DF5DDD981 /* LibraryPanel.swift in Sources */,
@@ -361,6 +368,7 @@
 				5AB793552FACDF8252607A80 /* BetterDropApp.swift in Sources */,
 				65E55FDBBEE0C864EACBF8AC /* BottomBar.swift in Sources */,
 				02BD4E312239E0684CBCA79B /* ConnectView.swift in Sources */,
+				3D2A6A373F0DC399134CEB10 /* Demo.swift in Sources */,
 				5C5359F664BCDFDA207B5D1A /* FlingableCard.swift in Sources */,
 				8F26A588AA3C98CCD0561B14 /* LibraryScreen.swift in Sources */,
 				EDD6CB648A5D6F12501C1416 /* PhoneModel.swift in Sources */,

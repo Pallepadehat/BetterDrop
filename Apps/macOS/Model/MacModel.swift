@@ -119,6 +119,9 @@ final class MacModel {
         let answer = await withCheckedContinuation { continuation in
             pendingApproval = approval
             approvalContinuation = continuation
+            #if DEBUG
+            runDemoOnPairingRequest()
+            #endif
             // Nobody at the Mac: say no after a minute rather than hang the phone forever.
             Task { [weak self] in
                 try? await Task.sleep(for: .seconds(60))
@@ -155,6 +158,9 @@ final class MacModel {
         connected.insert(peer, at: 0)
         pairedDevices = store.all()
         if preferences.playsSounds { NSSound(named: "Pop")?.play() }
+        #if DEBUG
+        runDemoOnConnect()
+        #endif
 
         Task {
             await link.start()
