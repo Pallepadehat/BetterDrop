@@ -24,3 +24,21 @@ public struct AuroraBackground: View, Animatable {
         .accessibilityHidden(true)
     }
 }
+
+/// Bright, solid flowing light, for a card whose file is on its way in.
+public struct PlasmaFill: View {
+    public var progress: Double
+
+    public init(progress: Double) {
+        self.progress = progress
+    }
+
+    public var body: some View {
+        ShaderClock(frameRate: 30) { time in
+            Rectangle()
+                .colorEffect(Shaders.library.Plasma(.boundingRect, .float(time), .float(Float(progress))))
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}

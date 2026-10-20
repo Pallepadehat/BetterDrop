@@ -45,7 +45,7 @@ public struct DropCard<Menu: View>: View {
                         .padding(10)
                 }
             }
-            .background(Color.white.opacity(0.05))
+            .background(Color(red: 0.12, green: 0.11, blue: 0.16))
             .clipShape(shape)
             .overlay { shape.strokeBorder(.white.opacity(0.09), lineWidth: 0.75) }
             .overlay { if let progress { ProgressVeil(progress: progress) } }
@@ -77,13 +77,16 @@ public struct CardMenuButton<Content: View>: View {
                 .font(.system(size: 13, weight: .bold))
                 .foregroundStyle(.white)
                 .frame(width: 30, height: 30)
+                .background(.black.opacity(0.45), in: .circle)
+                .overlay(Circle().strokeBorder(.white.opacity(0.18), lineWidth: 0.5))
+                // A finger-sized target around the small circle.
+                .frame(width: 44, height: 44)
                 .contentShape(.rect)
         }
         .menuStyle(.button)
         .buttonStyle(.plain)
         .menuIndicator(.hidden)
         .fixedSize()
-        .padding(4)
     }
 }
 
@@ -118,7 +121,7 @@ private struct Caption: View {
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.leading, 12)
-        .padding(.trailing, 34)
+        .padding(.trailing, 40)
         .padding(.top, 26)
         .padding(.bottom, 10)
         .background(LinearGradient(colors: [.clear, .black.opacity(0.65)], startPoint: .top, endPoint: .bottom))
@@ -162,7 +165,8 @@ private struct DocumentFace: View {
         }
         .padding(12)
         .background(
-            LinearGradient(colors: [Color.white.opacity(0.09), Color.white.opacity(0.03)], startPoint: .top, endPoint: .bottom))
+            LinearGradient(colors: [Color(red: 0.17, green: 0.15, blue: 0.22), Color(red: 0.10, green: 0.09, blue: 0.14)],
+                           startPoint: .top, endPoint: .bottom))
     }
 
     private var symbol: String {
@@ -188,9 +192,9 @@ public struct IncomingCard: View {
         let shape = RoundedRectangle(cornerRadius: DropCard<EmptyView>.cornerRadius, style: .continuous)
         Color.clear
             .aspectRatio(CardShape.ratio(for: transfer.kind, aspectRatio: transfer.aspectRatio), contentMode: .fit)
-            .overlay { AuroraBackground(intensity: 1).ignoresSafeArea(edges: []) }
-            .overlay { ProgressVeil(progress: transfer.fraction) }
-            .overlay(alignment: .bottomLeading) {
+            .overlay { PlasmaFill(progress: transfer.fraction) }
+            .overlay { ProgressVeil(progress: transfer.fraction, dims: false) }
+            .overlay(alignment: .bottom) {
                 VStack(alignment: .leading, spacing: 1) {
                     Text(transfer.name)
                         .font(.system(size: 12.5, weight: .semibold))
@@ -198,11 +202,14 @@ public struct IncomingCard: View {
                         .truncationMode(.middle)
                     Text("\(transfer.completed.fileSize) of \(transfer.byteCount.fileSize)")
                         .font(.system(size: 10.5).monospacedDigit())
-                        .opacity(0.7)
+                        .opacity(0.8)
                         .contentTransition(.numericText())
                 }
                 .foregroundStyle(.white)
-                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 9)
+                .background(.black.opacity(0.45))
             }
             .clipShape(shape)
             .overlay { shape.strokeBorder(Glow.text, lineWidth: 1).opacity(0.5) }
@@ -214,10 +221,11 @@ public struct IncomingCard: View {
 /// A ring of light filling round a glass disc.
 private struct ProgressVeil: View {
     var progress: Double
+    var dims = true
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.25)
+            Color.black.opacity(dims ? 0.25 : 0)
             Circle()
                 .fill(.ultraThinMaterial)
                 .frame(width: 46, height: 46)

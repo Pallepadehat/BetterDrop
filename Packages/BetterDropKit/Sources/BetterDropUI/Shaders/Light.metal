@@ -200,6 +200,22 @@ half4 Aurora(float2 position, half4 color, float4 bounds, float time, float inte
     return half4(half3(rgb * vignette), 1.0);
 }
 
+/// Bright, opaque, slowly flowing light for filling a card while its file arrives. `progress` (0–1) lifts it from
+/// a dim glow to full brightness.
+[[ stitchable ]]
+half4 Plasma(float2 position, half4 color, float4 bounds, float time, float progress) {
+    float2 size = bounds.zw;
+    float2 uv = (position - size * 0.5) / min(size.x, size.y);
+    float2 q = uv * 2.2;
+    float2 warp = float2(fbm(q + time * 0.25), fbm(q + float2(5.2, 1.3) - time * 0.2));
+    float f = fbm(q + 1.8 * warp + time * 0.1);
+    float3 rgb = iridescent(f * 0.9 + dot(uv, float2(0.3, 0.5)) + time * 0.05);
+    rgb *= 0.55 + 0.7 * smoothstep(0.2, 0.75, f);
+    rgb = mix(rgb, float3(1.0), smoothstep(0.72, 0.95, f) * 0.35);
+    rgb *= 0.55 + 0.45 * progress;
+    return half4(half3(rgb), 1.0);
+}
+
 // MARK: - Effects on views
 
 /// Burns a view away into light, starting from the side it's heading (`direction`), as `progress` goes 0 to 1.

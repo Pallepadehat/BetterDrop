@@ -31,6 +31,8 @@ struct FlingableCard<Menu: View>: View {
 
     var body: some View {
         DropCard(item: item, url: url, progress: progress)
+            // Before the menu goes on top, so tapping the "…" never opens the preview too.
+            .onTapGesture(perform: onOpen)
             .lightDissolve(burn, towards: heading)
             // Over the shader, not in it: a system menu inside a shader effect draws as a placeholder.
             .overlay(alignment: .bottomTrailing) {
@@ -54,7 +56,6 @@ struct FlingableCard<Menu: View>: View {
                     .scaleEffect(0.9)
             }
             .zIndex(isLifted || burn > 0 ? 1 : 0)
-            .onTapGesture(perform: onOpen)
             .gesture(fling)
             .sensoryFeedback(.selection, trigger: isLifted) { _, lifted in lifted }
             .sensoryFeedback(.error, trigger: refusals)
