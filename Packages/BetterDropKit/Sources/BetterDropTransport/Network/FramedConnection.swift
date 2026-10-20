@@ -98,6 +98,43 @@ public final class FramedConnection: Sendable {
         }
     }
 
+    /// Whatever bytes come next, up to `maximum`; nil once the other side has finished sending. For HTTP.
+    func receiveSome(maximum: Int) async throws -> Data? {
+        try await withCheckedThrowingContinuation { continuation in
+            connection.receive(minimumIncompleteLength: 1, maximumLength: maximum) { data, _, isComplete, error in
+                if let error {
+                    continuation.resume(throwing: Failure.failed(error.localizedDescription))
+                } else if let data, !data.isEmpty {
+                    continuation.resume(returning: data)
+                } else if isComplete {
+                    continuation.resume(returning: nil)
+                } else {
+                    continuation.resume(returning: Data())
+                }
+            }
+        }
+    }
+
+    /// Sends bytes as they are, without a length in front. For HTTP.
+    func sendRaw(_ data: Data) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+            connection.send(content: data, completion: .contentProcessed { error in
+                if let error { continuation.resume(throwing: Failure.failed(error.localizedDescription)) } else { continuation.resume() }
+            })
+        }
+    }
+
+    /// The address of the other end, when it's an IP address.
+    public var remoteHost: String? {
+        guard case let .hostPort(host, _) = connection.currentPath?.remoteEndpoint ?? connection.endpoint else { return nil }
+        return switch host {
+        case let .ipv4(address): "\(address)"
+        case let .ipv6(address): "\(address)"
+        case let .name(name, _): name
+        @unknown default: nil
+        }
+    }
+
     public func cancel() {
         connection.cancel()
     }

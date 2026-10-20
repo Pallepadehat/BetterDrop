@@ -30,6 +30,8 @@ public enum MessageCodec {
         case proximity(Proximity)
         case closeness(Double)
         case side(Side)
+        case fileServer(FileServerAddress)
+        case backgroundOffer(BackgroundOffer)
         case rename(String)
         case ping
         case pong
@@ -56,6 +58,8 @@ public enum MessageCodec {
         case let .proximity(proximity): control = .proximity(proximity)
         case let .closeness(value): control = .closeness(value)
         case let .side(side): control = .side(side)
+        case let .fileServer(address): control = .fileServer(address)
+        case let .backgroundOffer(offer): control = .backgroundOffer(offer)
         case let .rename(name): control = .rename(name)
         case .ping: control = .ping
         case .pong: control = .pong
@@ -87,6 +91,8 @@ public enum MessageCodec {
             case let .proximity(proximity): .proximity(proximity)
             case let .closeness(value): .closeness(min(1, max(0, value)))
             case let .side(side): .side(side)
+            case let .fileServer(address): .fileServer(address)
+            case let .backgroundOffer(offer): .backgroundOffer(offer)
             case let .rename(name): .rename(name)
             case .ping: .ping
             case .pong: .pong

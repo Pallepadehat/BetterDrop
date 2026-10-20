@@ -16,6 +16,8 @@ public enum LinkEvent: Sendable {
     case proximity(Proximity)
     case closeness(Double)
     case side(Side)
+    case fileServer(FileServerAddress)
+    case backgroundOffer(BackgroundOffer)
     case renamed(String)
     /// The connection is gone. Every transfer still going has been reported as failed.
     case closed
@@ -203,6 +205,10 @@ public actor Link {
             continuation.yield(.closeness(value))
         case let .side(side):
             continuation.yield(.side(side))
+        case let .fileServer(address):
+            continuation.yield(.fileServer(address))
+        case let .backgroundOffer(offer):
+            continuation.yield(.backgroundOffer(offer))
         case let .rename(name):
             continuation.yield(.renamed(name))
         case .ping:

@@ -39,6 +39,33 @@ public struct FileOffer: Codable, Sendable, Hashable, Identifiable {
     }
 }
 
+/// A big file the Mac has ready for the phone to fetch in the background, over HTTP.
+public struct BackgroundOffer: Codable, Sendable, Hashable {
+    public var offer: FileOffer
+    /// Names the file on the Mac's file server. Random; only good for this file.
+    public var token: String
+    /// Mixed with the pairing secret to make this file's key (see ``FileCipher``).
+    public var salt: Data
+
+    public init(offer: FileOffer, token: String, salt: Data) {
+        self.offer = offer
+        self.token = token
+        self.salt = salt
+    }
+}
+
+/// Where the Mac's file server can be reached.
+public struct FileServerAddress: Codable, Sendable, Hashable {
+    public var port: UInt16
+    /// The Mac's IPv4 addresses, best first. iOS's background downloader needs a plain address it can route to.
+    public var hosts: [String]
+
+    public init(port: UInt16, hosts: [String]) {
+        self.port = port
+        self.hosts = hosts
+    }
+}
+
 /// Everything two paired devices say to each other once the connection is encrypted.
 public enum Message: Sendable, Equatable {
     /// "I'd like to send you this." The other side answers with ``accept(_:)`` or ``decline(_:reason:)``.
@@ -60,6 +87,10 @@ public enum Message: Sendable, Equatable {
     case closeness(Double)
     /// The Mac telling the phone which side of it the phone sits.
     case side(Side)
+    /// The Mac's file server, for files too big to wait for.
+    case fileServer(FileServerAddress)
+    /// The Mac has a big file for the phone; fetch it in the background.
+    case backgroundOffer(BackgroundOffer)
     /// A device renamed itself.
     case rename(String)
     case ping
